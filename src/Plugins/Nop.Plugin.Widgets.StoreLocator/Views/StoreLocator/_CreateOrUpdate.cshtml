@@ -1,0 +1,91 @@
+@model Nop.Plugin.Widgets.StoreLocator.Models.StoreLocationModel
+
+<div class="form-horizontal">
+    <div class="cards-group">
+        <div class="card card-default">
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Name" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Name" />
+                        <span asp-validation-for="Name"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Address" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Address" />
+                        <span asp-validation-for="Address"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Latitude" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Latitude" />
+                        <span asp-validation-for="Latitude"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Longitude" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Longitude" />
+                        <span asp-validation-for="Longitude"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="PictureId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="PictureId" />
+                        <span asp-validation-for="PictureId"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="OpeningTime" />
+                    </div>
+                    <div class="col-md-9">
+                        <input type="time" asp-for="OpeningTime" />
+                        <span asp-validation-for="OpeningTime"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ClosingTime" />
+                    </div>
+                    <div class="col-md-9">
+                        <input type="time" asp-for="ClosingTime" />
+                        <span asp-validation-for="ClosingTime"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="SelectedColosedDays" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="SelectedColosedDays" asp-items="await ((System.DayOfWeek)1).ToSelectListAsync()" asp-multiple="true" />
+                        <span asp-validation-for="SelectedColosedDays"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="IsActive" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="IsActive" />
+                        <span asp-validation-for="IsActive"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

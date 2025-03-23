@@ -1,0 +1,32 @@
+@model StoreLocationModel
+@{
+    //page title
+    ViewBag.PageTitle = T("Admin.Catalog.Products.AddNew").Text;
+    NopHtml.SetActiveMenuItemSystemName("Widget.StoreLocator.Menu");
+    Layout = "_AdminLayout";
+}
+
+
+<form asp-controller="StoreLocator" asp-action="Edit" method="post" id="product-form">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Admin.Catalog.Products.AddNew")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Admin.Catalog.Products.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-floppy-disk"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-floppy-disk"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+        </div>
+    </div>
+    <input type="hidden" asp-for="Id"/>
+    @await Html.PartialAsync("~/Plugins/Widgets.StoreLocator/Views/StoreLocator/_CreateOrUpdate.cshtml", Model)
+</form>
