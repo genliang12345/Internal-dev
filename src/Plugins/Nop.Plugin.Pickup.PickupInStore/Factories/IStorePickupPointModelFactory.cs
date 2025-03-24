@@ -1,4 +1,5 @@
-﻿using Nop.Plugin.Pickup.PickupInStore.Models;
+﻿using Nop.Plugin.Pickup.PickupInStore.Domain;
+using Nop.Plugin.Pickup.PickupInStore.Models;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Factories;
 
@@ -26,4 +27,5 @@ public interface IStorePickupPointModelFactory
     /// The task result contains the store pickup point search model
     /// </returns>
     Task<StorePickupPointSearchModel> PrepareStorePickupPointSearchModelAsync(StorePickupPointSearchModel searchModel);
+    Task PrepareStorePickupPointModelAsync(StorePickupPointModel storeLocationModel, StorePickupPoint storeLocation);
 }

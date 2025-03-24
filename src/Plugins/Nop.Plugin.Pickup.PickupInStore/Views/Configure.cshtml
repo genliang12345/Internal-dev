@@ -19,6 +19,12 @@
                LengthMenu = Model.AvailablePageSizes,
                ColumnCollection = new List<ColumnProperty>
                 {
+                new ColumnProperty(nameof(StorePickupPointModel.PictureThumbnailUrl))
+                    {
+                        Title = T("Plugins.Pickup.PickupInStore.Fields.PictureThumbnailUrl").Text,
+                        Width = "100",
+                        Render = new RenderPicture(width: 100)
+                    },
                     new ColumnProperty(nameof(StorePickupPointModel.Name))
                     {
                         Title = T("Plugins.Pickup.PickupInStore.Fields.Name").Text,

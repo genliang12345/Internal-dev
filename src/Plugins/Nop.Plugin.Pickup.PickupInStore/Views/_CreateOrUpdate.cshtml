@@ -1,4 +1,5 @@
-﻿@model Nop.Plugin.Pickup.PickupInStore.Models.StorePickupPointModel
+﻿@using Nop.Services
+@model Nop.Plugin.Pickup.PickupInStore.Models.StorePickupPointModel
 
 <div asp-validation-summary="All"></div>
 <input asp-for="Id" type="hidden" />
@@ -175,6 +176,24 @@
                 <div class="col-sm-9">
                     <nop-editor asp-for="TransitDays" />
                     <span asp-validation-for="TransitDays"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="PictureId" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="PictureId" />
+                    <span asp-validation-for="PictureId"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <nop-label asp-for="SelectedColosedDays" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="SelectedColosedDays" asp-items="await ((System.DayOfWeek)1).ToSelectListAsync()" asp-multiple="true" />
+                    <span asp-validation-for="SelectedColosedDays"></span>
                 </div>
             </div>
         </div>

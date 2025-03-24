@@ -56,4 +56,7 @@ public class StorePickupPoint : BaseEntity
     /// Gets or sets a transit days
     /// </summary>
     public int? TransitDays { get; set; }
+
+    public int PictureId { get; set; }
+    public string ClosedDays { get; set; }
 }

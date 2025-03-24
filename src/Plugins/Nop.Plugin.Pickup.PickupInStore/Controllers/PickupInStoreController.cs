@@ -9,6 +9,7 @@ using Nop.Plugin.Pickup.PickupInStore.Services;
 using Nop.Services.Common;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
+using Nop.Services.Media;
 using Nop.Services.Security;
 using Nop.Services.Stores;
 using Nop.Web.Framework;
@@ -34,6 +35,7 @@ public class PickupInStoreController : BasePluginController
     protected readonly IStorePickupPointService _storePickupPointService;
     protected readonly IStoreService _storeService;
     protected readonly AddressSettings _addressSettings;
+    private readonly IPictureService _pictureService;
 
     #endregion
 
@@ -47,7 +49,8 @@ public class PickupInStoreController : BasePluginController
         IStorePickupPointModelFactory storePickupPointModelFactory,
         IStorePickupPointService storePickupPointService,
         IStoreService storeService,
-        AddressSettings customerSettings)
+        AddressSettings customerSettings, 
+        IPictureService pictureService)
     {
         _addressService = addressService;
         _countryService = countryService;
@@ -58,6 +61,7 @@ public class PickupInStoreController : BasePluginController
         _storePickupPointService = storePickupPointService;
         _storeService = storeService;
         _addressSettings = customerSettings;
+        _pictureService = pictureService;
     }
 
     #endregion
@@ -140,11 +144,15 @@ public class PickupInStoreController : BasePluginController
             StoreId = model.StoreId,
             Latitude = model.Latitude,
             Longitude = model.Longitude,
-            TransitDays = model.TransitDays
+            TransitDays = model.TransitDays, 
+            PictureId = model.PictureId
         };
+        pickupPoint.ClosedDays = string.Join(",", model.SelectedColosedDays);
         await _storePickupPointService.InsertStorePickupPointAsync(pickupPoint);
 
         ViewBag.RefreshPage = true;
+
+        await _storePickupPointModelFactory.PrepareStorePickupPointModelAsync(model, pickupPoint);
 
         return View("~/Plugins/Pickup.PickupInStore/Views/Create.cshtml", model);
     }
@@ -167,8 +175,11 @@ public class PickupInStoreController : BasePluginController
             StoreId = pickupPoint.StoreId,
             Latitude = pickupPoint.Latitude,
             Longitude = pickupPoint.Longitude,
-            TransitDays = pickupPoint.TransitDays
+            TransitDays = pickupPoint.TransitDays,
+            PictureId = pickupPoint.PictureId
+            
         };
+        
 
         var address = await _addressService.GetAddressByIdAsync(pickupPoint.AddressId);
         if (address != null)
@@ -202,6 +213,8 @@ public class PickupInStoreController : BasePluginController
         model.AvailableStores.Add(new SelectListItem { Text = await _localizationService.GetResourceAsync("Admin.Configuration.Settings.StoreScope.AllStores"), Value = "0" });
         foreach (var store in await _storeService.GetAllStoresAsync())
             model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString(), Selected = store.Id == model.StoreId });
+       
+        await _storePickupPointModelFactory.PrepareStorePickupPointModelAsync(model, pickupPoint);
 
         return View("~/Plugins/Pickup.PickupInStore/Views/Edit.cshtml", model);
     }
@@ -239,10 +252,12 @@ public class PickupInStoreController : BasePluginController
         pickupPoint.Latitude = model.Latitude;
         pickupPoint.Longitude = model.Longitude;
         pickupPoint.TransitDays = model.TransitDays;
+        pickupPoint.ClosedDays = string.Join(",", model.SelectedColosedDays);
+        pickupPoint.PictureId = model.PictureId;
         await _storePickupPointService.UpdateStorePickupPointAsync(pickupPoint);
 
         ViewBag.RefreshPage = true;
-
+       await  _storePickupPointModelFactory.PrepareStorePickupPointModelAsync(model, pickupPoint);
         return View("~/Plugins/Pickup.PickupInStore/Views/Edit.cshtml", model);
     }
 

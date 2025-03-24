@@ -1,19 +1,24 @@
 ﻿using Nop.Core;
+using Nop.Core.Domain.Cms;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Shipping;
+using Nop.Plugin.Pickup.PickupInStore.Components;
 using Nop.Plugin.Pickup.PickupInStore.Domain;
 using Nop.Plugin.Pickup.PickupInStore.Services;
+using Nop.Services.Cms;
 using Nop.Services.Common;
+using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
 using Nop.Services.Plugins;
 using Nop.Services.Shipping.Pickup;
 using Nop.Services.Shipping.Tracking;
+using Nop.Web.Framework.Infrastructure;
 
 namespace Nop.Plugin.Pickup.PickupInStore;
 
-public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
+public class PickupInStoreProvider : BasePlugin, IPickupPointProvider, IWidgetPlugin
 {
     #region Fields
 
@@ -24,6 +29,10 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
     protected readonly IStoreContext _storeContext;
     protected readonly IStorePickupPointService _storePickupPointService;
     protected readonly IWebHelper _webHelper;
+    private readonly WidgetSettings _widgetSettings;
+    private readonly ISettingService _settingService;
+
+    public bool HideInWidgetList => false;
 
     #endregion
 
@@ -35,7 +44,9 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
         IStateProvinceService stateProvinceService,
         IStoreContext storeContext,
         IStorePickupPointService storePickupPointService,
-        IWebHelper webHelper)
+        IWebHelper webHelper, 
+        WidgetSettings widgetSettings, 
+        ISettingService settingService)
     {
         _addressService = addressService;
         _countryService = countryService;
@@ -44,6 +55,8 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
         _storeContext = storeContext;
         _storePickupPointService = storePickupPointService;
         _webHelper = webHelper;
+        _widgetSettings = widgetSettings;
+        _settingService = settingService;
     }
 
     #endregion
@@ -147,6 +160,11 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
         };
         await _storePickupPointService.InsertStorePickupPointAsync(pickupPoint);
 
+        if (!_widgetSettings.ActiveWidgetSystemNames.Contains(PluginDescriptor.SystemName))
+        {
+            _widgetSettings.ActiveWidgetSystemNames.Add(PluginDescriptor.SystemName);
+            await _settingService.SaveSettingAsync(_widgetSettings);
+        }
         //locales
         await _localizationService.AddOrUpdateLocaleResourceAsync(new Dictionary<string, string>
         {
@@ -175,7 +193,16 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
             ["Plugins.Pickup.PickupInStore.Fields.Store.Hint"] = "A store name for which this pickup point will be available.",
             ["Plugins.Pickup.PickupInStore.Fields.TransitDays"] = "Transit days",
             ["Plugins.Pickup.PickupInStore.Fields.TransitDays.Hint"] = "The number of days of delivery of the goods to pickup point.",
-            ["Plugins.Pickup.PickupInStore.NoPickupPoints"] = "No pickup points are available"
+            ["Plugins.Pickup.PickupInStore.NoPickupPoints"] = "No pickup points are available",
+            ["Plugins.Pickup.PickupInStore.Fields.PictureThumbnailUrl"] = "Picture",
+            ["Plugins.Pickup.PickupInStore.Fields.PictureId"] = "Picture",
+            ["Plugins.Pickup.PickupInStore.Fields.PictureId.Hint"] = "Picture for store locator",
+            ["Plugins.Pickup.PickupInStore.Fields.SelectedClosedDays"] = "Closed Days",
+            ["Plugins.Pickup.PickupInStore.Fields.SelectedClosedDays.Hint"] = "Closed Days for store locator",
+            ["Plugins.Pickup.PickupInStore.Public.NoStore"] = "No store found.",
+            ["Plugins.Pickup.PickupInStore.Public.BrowseMenu"] = "Browse Menu",
+            ["Plugins.Pickup.PickupInStore.Public.Direction"] = "Direction",
+            ["Plugins.Pickup.PickupInStore.Public.PageTitle"] = "Store Locations",
         });
 
         await base.InstallAsync();
@@ -187,10 +214,29 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider
     /// <returns>A task that represents the asynchronous operation</returns>
     public override async Task UninstallAsync()
     {
+      
+        //settings
+        if (_widgetSettings.ActiveWidgetSystemNames.Contains(PluginDescriptor.SystemName))
+        {
+            _widgetSettings.ActiveWidgetSystemNames.Remove(PluginDescriptor.SystemName);
+            await _settingService.SaveSettingAsync(_widgetSettings);
+        }
         //locales
         await _localizationService.DeleteLocaleResourcesAsync("Plugins.Pickup.PickupInStore");
 
         await base.UninstallAsync();
+    }
+
+    public Task<IList<string>> GetWidgetZonesAsync()
+    {
+        return Task.FromResult<IList<string>>(new List<string> {
+            PublicWidgetZones.HeaderLinksBefore
+        });
+    }
+
+    public Type GetWidgetViewComponent(string widgetZone)
+    {
+        return typeof(HeaderLinkViewComponent);
     }
 
     #endregion

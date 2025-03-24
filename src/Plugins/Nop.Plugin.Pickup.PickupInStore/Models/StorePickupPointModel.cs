@@ -46,6 +46,15 @@ public record StorePickupPointModel : BaseNopEntityModel
     [UIHint("Int32Nullable")]
     [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Fields.TransitDays")]
     public int? TransitDays { get; set; }
+
+    [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Fields.PictureId")]
+    [UIHint("Picture")]
+    public int PictureId { get; set; }
+
+    [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Fields.PictureThumbnailUrl")]
+    public string PictureThumbnailUrl { get; set; }
+    [NopResourceDisplayName("Plugins.Pickup.PickupInStore.Fields.SelectedClosedDays")]
+    public IList<int> SelectedColosedDays { get; set; }
 }
 
 public class AddressModel
