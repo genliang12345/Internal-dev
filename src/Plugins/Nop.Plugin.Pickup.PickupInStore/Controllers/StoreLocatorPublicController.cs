@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nop.Core;
 using Nop.Core.Domain.Common;
@@ -15,11 +14,11 @@ using Nop.Web.Controllers;
 
 namespace Nop.Plugin.Pickup.PickupInStore.Controllers
 {
+    [AutoValidateAntiforgeryToken]
     public class StoreLocatorPublicController : BasePublicController
     {
         private readonly IStorePickupPointService _storePickupPointService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IWorkContext _workContext;
         private readonly IPictureService _pictureService;
         private readonly IStoreContext _storeContext;
         private readonly IAddressService _addressService;
@@ -37,13 +36,13 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
         {
             _storePickupPointService = storePickupPointService;
             _dateTimeHelper = dateTimeHelper;
-            _workContext = workContext;
             _pictureService = pictureService;
             _storeContext = storeContext;
             _addressService = addressService;
             _stateProvinceService = stateProvinceService;
             _countryService = countryService;
         }
+        [HttpGet]
         public async Task<IActionResult> PublicView()
         {
             var utcNow = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, TimeZoneInfo.Utc, _dateTimeHelper.DefaultStoreTimeZone);
@@ -83,7 +82,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
 
 
 
-        static int GetNextAvailableDay(int currentDay, List<int> availableDays)
+        private static int GetNextAvailableDay(int currentDay, List<int> availableDays)
         {
             for (int i = 1; i <= 7; i++) // Loop through the next 7 days to prevent infinite loops
             {
@@ -95,7 +94,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
             }
             return -1; // Return -1 if no available day is found (shouldn't happen in normal cases)
         }
-        static string GetDayAbbreviation(int dayInt)
+        private static string GetDayAbbreviation(int dayInt)
         {
             return CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedDayName((DayOfWeek)dayInt);
         }

@@ -230,7 +230,8 @@ public class PickupInStoreProvider : BasePlugin, IPickupPointProvider, IWidgetPl
     public Task<IList<string>> GetWidgetZonesAsync()
     {
         return Task.FromResult<IList<string>>(new List<string> {
-            PublicWidgetZones.HeaderLinksBefore
+            PublicWidgetZones.HeaderLinksBefore, 
+            PublicWidgetZones.HeaderLinksAfter,
         });
     }
 

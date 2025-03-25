@@ -147,7 +147,9 @@ public class PickupInStoreController : BasePluginController
             TransitDays = model.TransitDays, 
             PictureId = model.PictureId
         };
-        pickupPoint.ClosedDays = string.Join(",", model.SelectedColosedDays);
+        pickupPoint.ClosedDays = model.SelectedColosedDays != null ?
+            string.Join(",", model.SelectedColosedDays)
+            : string.Empty;
         await _storePickupPointService.InsertStorePickupPointAsync(pickupPoint);
 
         ViewBag.RefreshPage = true;
@@ -252,7 +254,9 @@ public class PickupInStoreController : BasePluginController
         pickupPoint.Latitude = model.Latitude;
         pickupPoint.Longitude = model.Longitude;
         pickupPoint.TransitDays = model.TransitDays;
-        pickupPoint.ClosedDays = string.Join(",", model.SelectedColosedDays);
+        pickupPoint.ClosedDays = model.SelectedColosedDays != null ?
+            string.Join(",", model.SelectedColosedDays)
+            : string.Empty;
         pickupPoint.PictureId = model.PictureId;
         await _storePickupPointService.UpdateStorePickupPointAsync(pickupPoint);
 

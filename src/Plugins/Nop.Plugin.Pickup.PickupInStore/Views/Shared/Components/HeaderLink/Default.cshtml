@@ -1,15 +1,35 @@
+@model bool
+@if (Model)
+{
+    <style>
+        #mobile-bottom-navigation li a.ico-pin::before {
+            content: "\e95e";
+        }
+    </style>
+    <script>
+            $('<li class="locator-item">' +
+            '<a class="ico-pin" href="@Url.RouteUrl("Nop.Plugin.Pickup.PickupInStore.StoreLocator")" class="locator-link">' +
+            '<span>Store Locator</span>' +
+            '</a>' +
+          '</li>'
+        ).insertBefore('#mobile-bottom-navigation .cart-item');
 
-<style>
-    .header-links > ul > li a.ico-pin::before {
-        content: "\e95e";
-    }
-</style>
-<li>
-    <a href="@Url.RouteUrl("Nop.Plugin.Pickup.PickupInStore.StoreLocator")" class="ico-pin">
-        <label>
-            <span class="wishlist-label faded">Store Locator</span>
-            <span class="wishlist-label">Nearby Stores</span>
+    </script>
+}
+else
+{
+    <style>
+        .header-links > ul > li a.ico-pin::before {
+            content: "\e95e";
+        }
+    </style>
+    <li>
+        <a href="@Url.RouteUrl("Nop.Plugin.Pickup.PickupInStore.StoreLocator")" class="ico-pin">
+            <label>
+                <span class="wishlist-label faded">Store Locator</span>
+                <span class="wishlist-label">Nearby Stores</span>
 
-        </label>
-    </a>
-</li>
+            </label>
+        </a>
+    </li>
+}
