@@ -93,10 +93,12 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
                         p.Latitude = 0;
                         p.Longitude = 0;
                     }
+                    var distance = CalculateDistance(latitude.Value, longitude.Value, p.Latitude.Value, p.Longitude.Value);
+                    p.Distance = FormatDistance(distance);
                     return new
                     {
+                        Distance = distance,
                         PickupPoint = p,
-                        Distance = CalculateDistance(latitude.Value, longitude.Value, p.Latitude.Value, p.Longitude.Value)
                     };
                 })
                 .OrderBy(p => p.Distance)
@@ -149,7 +151,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
         }
         private double CalculateDistance(double lat1, double lon1, decimal lat2, decimal lon2)
         {
-            const double earthRadiusKm = 6371; // Earth's radius in km
+            const double EarthRadiusKm = 6371; // Earth's radius in km
             double lat2D = Convert.ToDouble(lat2);
             double lon2D = Convert.ToDouble(lon2);
             double dLat = ToRadians(lat2D - lat1);
@@ -161,12 +163,17 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
 
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
-            return earthRadiusKm * c; // Distance in kilometers
+            return (EarthRadiusKm * c) * 1000; // Convert km to meters
         }
 
         private double ToRadians(double angle)
         {
             return Math.PI * angle / 180.0;
+        }
+
+        public static string FormatDistance(double meters)
+        {
+            return meters >= 1000 ? $"{meters / 1000:0.##} km" : $"{meters:0} m";
         }
     }
 }

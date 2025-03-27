@@ -40,6 +40,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Models
 
 
         public IList<int> SelectedColosedDays { get; set; }
+        public string Distance { get;  set; }
 
         public bool IsClosedToday(DayOfWeek dayOfWeek)
         {

@@ -13,7 +13,16 @@
             <h4 class="card-title">@x.Name</h4>
             <p style="margin-bottom: 5px"><span class="badge @x.CloseClass">@x.CloseStatus</span> <span class="gray-color"> @x.Timing </span></p>
             <p style="margin: 5px 0">@x.Description</p>
-            <p>@x.Address</p>
+            <p>
+                @if (!string.IsNullOrEmpty(x.Distance))
+                {
+                    <text>@x.Distance - @x.Address</text>
+                }
+                else
+                {
+                    @:x.Address
+                }
+            </p>
             <div class="buttons">
                 <a href="https://www.google.com/maps/search/?api=1&query=@x.Latitude,@x.Longitude" class="outline">@T("Plugins.Pickup.PickupInStore.Public.Direction")</a>
                 <a href="/" class="fill">@T("Plugins.Pickup.PickupInStore.Public.BrowseMenu")</a>

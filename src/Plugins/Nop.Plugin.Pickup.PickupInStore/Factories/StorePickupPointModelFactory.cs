@@ -99,7 +99,7 @@ public class StorePickupPointModelFactory : IStorePickupPointModelFactory
     {
         if (storeLocation != null && storeLocationModel != null)
         {
-            storeLocationModel.SelectedColosedDays = storeLocation.ClosedDays != null ? storeLocation.ClosedDays.Split(",").Select(int.Parse).ToList() : new List<int>();
+            storeLocationModel.SelectedColosedDays = storeLocation.ClosedDays != null ? storeLocation.ClosedDays.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList() : new List<int>();
             storeLocationModel.PictureThumbnailUrl = await _pictureService.GetPictureUrlAsync(storeLocation.PictureId);
         }
     }
