@@ -62,12 +62,16 @@ public class StorePickupPointService : IStorePickupPointService
     /// A task that represents the asynchronous operation
     /// The task result contains the pickup points
     /// </returns>
-    public virtual async Task<IPagedList<StorePickupPoint>> GetAllStorePickupPointsAsync(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
+    public virtual async Task<IPagedList<StorePickupPoint>> GetAllStorePickupPointsAsync( int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue, string q = "")
     {
         var rez = await _shortTermCacheManager.GetAsync(async () => await _storePickupPointRepository.GetAllAsync(query =>
         {
             if (storeId > 0)
-                query = query.Where(point => point.StoreId == storeId || point.StoreId == 0);
+                query = query.Where(point => point.StoreId == storeId || point.StoreId == 0); 
+            
+            if (!string.IsNullOrEmpty(q))
+                query = query.Where(point => point.Name.Contains(q));
+
             query = query.OrderBy(point => point.DisplayOrder).ThenBy(point => point.Name);
 
             return query;

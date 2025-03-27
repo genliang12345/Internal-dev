@@ -62,6 +62,9 @@
     <None Update="Views\Shared\Components\HeaderLink\Default.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Views\StoreLocatorPublic\_PublicPickupPointsCards.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Views\StoreLocatorPublic\PublicView.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

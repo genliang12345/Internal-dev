@@ -18,7 +18,7 @@ public interface IStorePickupPointService
     /// A task that represents the asynchronous operation
     /// The task result contains the pickup points
     /// </returns>
-    Task<IPagedList<StorePickupPoint>> GetAllStorePickupPointsAsync(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue);
+    Task<IPagedList<StorePickupPoint>> GetAllStorePickupPointsAsync( int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue, string q = "");
 
     /// <summary>
     /// Gets a pickup point

@@ -4,11 +4,10 @@
     NopHtml.AddTitleParts(T("Plugins.Pickup.PickupInStore.Public.PageTitle").Text);
 }
 <style>
-    .container {
+    .pickup-container {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        
     }
 
     .card {
@@ -131,37 +130,156 @@
         }
     }
 </style>
+<style>
+    .search-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 10px;
+        margin-top: 17px;
+        margin-bottom: 10px;
+    }
 
+    .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        height: 60px;
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        outline: none;
+        border-radius: 30px;
+        font-size: 16px;
+        background: transparent;
+    }
+
+    .loading {
+        width: 20px;
+        height: 20px;
+        border: 3px solid #ccc;
+        border-top: 3px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: none;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .search-container {
+            width: 100%;
+            height: 50px;
+        }
+    }
+</style>
 <div class="page shopping-cart-page">
     <div class="page-title">
         <h1>@T("Plugins.Pickup.PickupInStore.Public.PageTitle")</h1>
     </div>
+    <div class="search-wrapper">
+        <div class="search-container">
+            <input type="text" class="search-input" id="search" placeholder="Search pickups...">
+            <div class="loading"></div>
+        </div>
+    </div>
     <div class="page-body">
-        <div class="container">
-            @if (!Model.Any())
-            {
-                <div style="color: grey; padding: 30px"><h3>@T("Plugins.Pickup.PickupInStore.NoPickupPoints")</h3></div>
-            }
-            @foreach (var x in Model)
-            {
-                <div class="card">
-                    <div class="image-container">
-                        <img src="@x.PictureThumbnailUrl" alt="@x.Name">
-                    </div>
-                    <div class="card-data">
-                        <h4 class="card-title">@x.Name</h4>
-                        <p style="margin-bottom: 5px"><span class="badge @x.CloseClass">@x.CloseStatus</span> <span class="gray-color"> @x.Timing </span></p>
-                        <p style="margin: 5px 0">@x.Description</p>
-                        <p>@x.Address</p>
-                        <div class="buttons">
-                            <a href="https://www.google.com/maps/search/?api=1&query=@x.Latitude,@x.Longitude" class="outline">@T("Plugins.Pickup.PickupInStore.Public.Direction")</a>
-                            <a href="/" class="fill">@T("Plugins.Pickup.PickupInStore.Public.BrowseMenu")</a>
-
-                        </div>
-                    </div>
-                </div>
-            }
-
+        <div class="pickup-container">
         </div>
     </div>
 </div>
+
+<script asp-location="Footer">
+    let timer;
+         function fetchResults() {
+             clearTimeout(timer);
+             $(".loading").show();
+
+             timer = setTimeout(function() {
+                 let query = $("#search").val();
+                    fetchResultsAjax(query);
+             }, 1000);
+         }
+         function fetchResultsAjax(q){
+             let location = getStoredLocation();
+              var postData = { q: q  };
+              if(location){
+                  postData.latitude = location.latitude;
+                  postData.longitude = location.longitude;
+              }
+                     addAntiForgeryToken(postData);
+                     $.ajax({
+                         url: "@(Url.Action("FetchPickups", "StoreLocatorPublic"))", // Replace with actual API URL
+                         type: "POST",
+                         data: postData,
+                         success: function(response) {
+                             console.log("Search results:", response);
+                             $(".pickup-container").html(response);
+                         },
+                         complete: function() {
+                             $(".loading").hide();
+                         }
+                     });
+         }
+         fetchResultsAjax('');
+         $("#search").on("input", fetchResults);
+
+         $("#search").on("keypress", function(event) {
+             if (event.which === 13) { // Enter key
+                 event.preventDefault();
+                 fetchResults();
+             }
+         });
+
+             // Function to ask for user location and store it in localStorage
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    };
+                    localStorage.setItem('userLocation', JSON.stringify(userLocation));
+                    fetchResults();
+                },
+                (error) => {
+                    console.error('Error getting location:', error.message);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    }
+
+    // Function to read user location from localStorage
+    function getStoredLocation() {
+        const storedLocation = localStorage.getItem('userLocation');
+        return storedLocation ? JSON.parse(storedLocation) : null;
+    }
+
+    // Example usage
+    $(function (){
+      getUserLocation();
+    })
+   
+  
+
+</script>

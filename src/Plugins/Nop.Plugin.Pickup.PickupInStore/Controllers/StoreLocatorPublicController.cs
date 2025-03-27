@@ -45,9 +45,16 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
         [HttpGet]
         public async Task<IActionResult> PublicView()
         {
+
+            return View("~/Plugins/Pickup.PickupInStore/Views/StoreLocatorPublic/PublicView.cshtml");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FetchPickups(string q, double? latitude, double? longitude)
+        {
             var utcNow = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow, TimeZoneInfo.Utc, _dateTimeHelper.DefaultStoreTimeZone);
 
-            var stores = await _storePickupPointService.GetAllStorePickupPointsAsync((await _storeContext.GetCurrentStoreAsync()).Id, 0, int.MaxValue);
+            var stores = await _storePickupPointService.GetAllStorePickupPointsAsync((await _storeContext.GetCurrentStoreAsync()).Id, 0, int.MaxValue, q: q);
             var storesModel = await stores.SelectAwait(async x =>
               {
                   var y = x.ToModel<PublicStoreModel>();
@@ -77,7 +84,26 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
                   return y;
               }).ToListAsync();
 
-            return View("~/Plugins/Pickup.PickupInStore/Views/StoreLocatorPublic/PublicView.cshtml", storesModel);
+            if (latitude.HasValue && longitude.HasValue)
+            {
+                storesModel = storesModel.Select(p =>
+                {
+                    if (!p.Latitude.HasValue || !p.Longitude.HasValue)
+                    {
+                        p.Latitude = 0;
+                        p.Longitude = 0;
+                    }
+                    return new
+                    {
+                        PickupPoint = p,
+                        Distance = CalculateDistance(latitude.Value, longitude.Value, p.Latitude.Value, p.Longitude.Value)
+                    };
+                })
+                .OrderBy(p => p.Distance)
+                .Select(p => p.PickupPoint).ToList();
+            }
+
+            return PartialView("~/Plugins/Pickup.PickupInStore/Views/StoreLocatorPublic/_PublicPickupPointsCards.cshtml", storesModel);
         }
 
 
@@ -120,6 +146,27 @@ namespace Nop.Plugin.Pickup.PickupInStore.Controllers
                     ss.Append(item.Trim() + " ");
             }
             return ss.ToString();
+        }
+        private double CalculateDistance(double lat1, double lon1, decimal lat2, decimal lon2)
+        {
+            const double earthRadiusKm = 6371; // Earth's radius in km
+            double lat2D = Convert.ToDouble(lat2);
+            double lon2D = Convert.ToDouble(lon2);
+            double dLat = ToRadians(lat2D - lat1);
+            double dLon = ToRadians(lon2D - lon1);
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2D)) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            return earthRadiusKm * c; // Distance in kilometers
+        }
+
+        private double ToRadians(double angle)
+        {
+            return Math.PI * angle / 180.0;
         }
     }
 }
