@@ -1,32 +1,44 @@
 @model System.Collections.Generic.List<Nop.Plugin.Pickup.PickupInStore.Models.PublicStoreModel>
+
 @if (!Model.Any())
 {
-    <div style="color: grey; padding: 30px"><h3>@T("Plugins.Pickup.PickupInStore.NoPickupPoints")</h3></div>
+    <div style="color: grey; padding: 30px;">
+        <h3>@T("Plugins.Pickup.PickupInStore.NoPickupPoints")</h3>
+    </div>
 }
+
 @foreach (var x in Model)
 {
-    <div class="card">
-        <div class="image-container">
-            <img src="@x.PictureThumbnailUrl" alt="@x.Name">
-        </div>
-        <div class="card-data">
-            <h4 class="card-title">@x.Name</h4>
-            <p style="margin-bottom: 5px"><span class="badge @x.CloseClass">@x.CloseStatus</span> <span class="gray-color"> @x.Timing </span></p>
-            <p style="margin: 5px 0">@x.Description</p>
-            <p>
-                @if (!string.IsNullOrEmpty(x.Distance))
-                {
-                    <text>@x.Distance - @x.Address</text>
-                }
-                else
-                {
-                    <text>@x.Address</text>
-                }
-            </p>
-            <div class="buttons">
-                <a href="https://www.google.com/maps/search/?api=1&query=@x.Latitude,@x.Longitude" class="outline">@T("Plugins.Pickup.PickupInStore.Public.Direction")</a>
-                <a href="/" class="fill">@T("Plugins.Pickup.PickupInStore.Public.BrowseMenu")</a>
-
+    <div style="width: 100%; display: block; margin-bottom: 24px;">
+        <div style="max-width: 500px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; background: white;">
+            <div class="image-container">
+                <img src="@x.PictureThumbnailUrl" alt="@x.Name" style="width: 100%; height: auto;">
+            </div>
+            <div class="card-data" style="padding: 16px;">
+                <h4 class="card-title" style="margin: 0 0 10px 0;">@x.Name</h4>
+                <p style="margin-bottom: 5px;">
+                    <span style="background-color: @(x.CloseClass == "open" ? "#4caf50" : "#f44336"); color: white; padding: 4px 8px; border-radius: 4px;">@x.CloseStatus</span>
+                    <span style="color: #777; margin-left: 8px;">@x.Timing</span>
+                </p>
+                <p style="margin: 5px 0;">@x.Description</p>
+                <p style="margin: 5px 0;">
+                    @if (!string.IsNullOrEmpty(x.Distance))
+                    {
+                        <text>@x.Distance - @x.Address</text>
+                    }
+                    else
+                    {
+                        <text>@x.Address</text>
+                    }
+                </p>
+                <div class="buttons" style="margin-top: 12px; display: flex; gap: 12px;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=@x.Latitude,@x.Longitude" style="flex: 1; text-align: center; padding: 8px; border: 1px solid #7b61ff; color: #7b61ff; border-radius: 6px; text-decoration: none;">
+                        @T("Plugins.Pickup.PickupInStore.Public.Direction")
+                    </a>
+                    <a href="/" style="flex: 1; text-align: center; padding: 8px; background-color: #7b61ff; color: white; border-radius: 6px; text-decoration: none;">
+                        @T("Plugins.Pickup.PickupInStore.Public.BrowseMenu")
+                    </a>
+                </div>
             </div>
         </div>
     </div>
